@@ -1,0 +1,4 @@
+pydash
+python-decouple
+pymongo
+requests
