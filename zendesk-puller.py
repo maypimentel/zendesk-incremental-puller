@@ -14,8 +14,9 @@ ZENDESK_TOKEN = config('ZENDESK_TOKEN', cast=str)
 ZENDESK_URL = config('ZENDESK_URL', cast=str)
 SERVICE_REQUEST_TIMEOUT = config('SERVICE_REQUEST_TIMEOUT', default=60000, cast=int)
 MONGODB_URI = config('MONGODB_URI', cast=str)
+MONGODB_DB = config('MONGODB_DB', cast=str)
 client = MongoClient(MONGODB_URI)
-db = client['zendesk-tickets']
+db = client[MONGODB_DB]
 try:
     db.tickets.create_index([('id', pymongo.ASCENDING)], unique=True)
     db.users.create_index([('id', pymongo.ASCENDING)], unique=True)
@@ -66,7 +67,7 @@ def make_request(startTime=None, cursor=None):
     try:
         qs = {
             'include': 'users',
-            'per_page': 100,
+            'per_page': 1000,
         }
         if cursor:
             qs['cursor'] = cursor
@@ -131,14 +132,14 @@ def manage_tickets(tickets):
 def main():
     endOfStream = False
     cursor = False
-    startTime = 1583887503
+    startTime = 1583106695
     while not endOfStream:
         response = make_request(startTime, cursor)
         startTime = pydash.get(response, 'end_time')
-        cursor = pydash.get(response, 'end_time')
-        # endOfStream = pydash.get(response, 'end_of_stream')
+        cursor = pydash.get(response, 'after_cursor')
+        endOfStream = pydash.get(response, 'end_of_stream')
         # Testing with only one request
-        endOfStream = True
+        # endOfStream = True
         users = pydash.get(response, 'users')
         if users and len(users) > 0:
             response['users'] = manage_users(users)
