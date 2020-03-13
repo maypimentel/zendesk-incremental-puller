@@ -6,7 +6,7 @@ import urllib
 import os
 from time import sleep
 from decouple import config
-from pymongo import MongoClient
+from pymongo import MongoClient, ASCENDING
 
 logger = logging.getLogger(__name__)
 ZENDESK_USER = config('ZENDESK_USER', cast=str)
@@ -18,9 +18,9 @@ MONGODB_DB = config('MONGODB_DB', cast=str)
 client = MongoClient(MONGODB_URI)
 db = client[MONGODB_DB]
 try:
-    db.tickets.create_index([('id', pymongo.ASCENDING)], unique=True)
-    db.users.create_index([('id', pymongo.ASCENDING)], unique=True)
-    db.users.create_index([('email', pymongo.ASCENDING)])
+    db.tickets.create_index([('id', ASCENDING)], unique=True)
+    db.users.create_index([('id', ASCENDING)], unique=True)
+    db.users.create_index([('email', ASCENDING)])
 except Exception as err:
     logger.error('Not existis collection: {}'.format(err))
 
