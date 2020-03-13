@@ -89,11 +89,11 @@ def make_request(startTime=None, cursor=None):
             return response.json()
         elif response.status_code == 429:
             sleep(int(response.headers['retry-after']))
-            return make_request(startTime)
+            return make_request(startTime, cursor)
     except requests.Timeout as err:
         logger.error('Timeout error, retring in 120s')
         sleep(120)
-        return make_request(startTime)
+        return make_request(startTime, cursor)
     except Exception as err:
         logger.error('Error: {}'.format(err))
 
