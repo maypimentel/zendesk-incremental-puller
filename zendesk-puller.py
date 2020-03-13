@@ -8,6 +8,7 @@ from time import sleep
 from decouple import config
 from pymongo import MongoClient, ASCENDING
 
+logging.basicConfig()
 logger = logging.getLogger(__name__)
 ZENDESK_USER = config('ZENDESK_USER', cast=str)
 ZENDESK_TOKEN = config('ZENDESK_TOKEN', cast=str)
@@ -90,7 +91,7 @@ def make_request(startTime=None, cursor=None):
             sleep(int(response.headers['retry-after']))
             return make_request(startTime)
     except requests.Timeout as err:
-        logger.error('Timeout error, retaing in 10s')
+        logger.error('Timeout error, retring in 120s')
         sleep(120)
         return make_request(startTime)
     except Exception as err:
